@@ -1,0 +1,188 @@
+
+---创建数据库-----
+create database wm;
+
+---创建店铺表------
+
+drop table if exists ods_shop;
+create table ods_shop(
+wm_poi_id string comment '外卖店铺id',
+dp_shop_id bigint comment '店铺id',
+shop_status string comment '店铺状态',
+shop_name string comment '店铺名称',
+shop_pic string comment '店铺图片',
+delivery_fee string,
+delivery_type string,
+delivery_time string,
+min_fee double,
+online_pay int,
+bulletin string,
+shipping_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+
+
+
+drop table if exists ods_shop;
+create table ods_shop(
+wm_poi_id string,
+dp_shop_id bigint,
+shop_name string,
+shop_status string,
+shop_pic string,
+delivery_fee string,
+delivery_type string,
+delivery_time string,
+min_fee double,
+online_pay int,
+bulletin string,
+shipping_time string,
+create_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+---店铺插入语句----
+insert into table ods_shop partition(batch_date) 
+select wm_poi_id,dp_shop_id,shop_name,shop_status,shop_pic,delivery_fee,
+delivery_type,delivery_time,min_fee,online_pay,bulletin,shipping_time,create_time from shop;
+
+
+---商品建表语句---
+
+
+drop table if exists ods_item;
+create table ods_item(
+wm_poi_id string,
+dp_shop_id bigint,
+shop_name string,
+spu_id bigint,
+spu_name string,
+unit string,
+tag string,
+activity_tag string,
+little_image string,
+big_image string,
+origin_price double,
+current_price double,
+spu_desc string,
+praise_num bigint,
+activity_type bigint,
+spu_promotion_info string,
+status_desc string,
+category_name string,
+category_type string,
+create_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+---商品插入语句----
+insert into table ods_item partition(batch_date) 
+select wm_poi_id,dp_shop_id,shop_name,spu_id,spu_name,
+unit,tag,activity_tag,little_image,big_image,origin_price,
+current_price,spu_desc,praise_num,activity_type,spu_promotion_info,status_desc,
+category_name,category_type,create_time from item;
+
+
+---店铺优惠劵建表语句---
+drop table if exists ods_coupon;
+create table ods_coupon(
+wm_poi_id string,
+dp_shop_id bigint,
+shop_name string,
+coupon_id bigint,
+coupon_pool_id bigint,
+activity_id bigint,
+coupon_value double,
+coupon_condition_text string,
+coupon_valid_time_text string,
+coupon_status string,
+limit_new_user string,
+create_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+---店铺优惠劵插入语句----
+insert into table ods_coupon partition(batch_date) 
+select wm_poi_id,dp_shop_id,shop_name,coupon_id,coupon_pool_id,activity_id,
+coupon_value,coupon_condition_text,coupon_valid_time_text,coupon_status,limit_new_user,create_time from coupon;
+
+
+---店铺列表店铺信息插入语句----
+drop table if exists ods_shop_basic;
+create table ods_shop_basic(
+wm_poi_id string,
+shop_name string,
+status_desc string,
+address string,
+pic_url string,
+wm_poi_score int,
+shipping_time string,
+status int,
+create_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+---店铺插入语句----
+insert into table ods_shop_basic partition(batch_date) 
+select wm_poi_id,shop_name,status_desc,address,pic_url,wm_poi_score,shipping_time,status,create_time from shop_basic;
+
+---店铺评论建表语句----
+drop table if exists ods_shop_comment;
+create table ods_shop_comment(
+shop_id bigint,
+wm_poi_id string,
+record_count bigint,
+dp_comment_num bigint,
+praise_ratio string,
+quality_score double,
+pack_score double,
+integrated_score double,
+shop_score double,
+delivery_score double,
+comment_labels string,
+create_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+---店铺评论插入语句----
+insert into table ods_shop_comment partition(batch_date) 
+select shop_id,wm_poi_id,record_count,dp_comment_num,praise_ratio,quality_score,pack_score,
+integrated_score,shop_score,delivery_score,comment_labels,create_time from shop_comment;
+
+
+---用户评论建表语句----
+drop table if exists ods_user_comment;
+create table ods_user_comment(
+shop_id bigint,
+wm_poi_id string,
+user_id bigint,
+user_name string,
+user_pic_url string,
+comment_time string,
+score double,
+delivery_time string,
+content string,
+shop_reply string,
+is_anonymous bigint,
+pictures string,
+create_time string
+)
+partitioned by (batch_date string)
+row format delimited fields terminated by '\t';
+
+---店铺评论插入语句----
+insert into table ods_user_comment partition(batch_date) 
+select shop_id,wm_poi_id,user_id,user_name,user_pic_url,comment_time,score,
+delivery_time,content,shop_reply,is_anonymous,pictures,create_time from user_comment;
+
+
+
+
+
