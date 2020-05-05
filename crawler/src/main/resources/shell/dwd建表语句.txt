@@ -1,0 +1,45 @@
+
+#---创建店铺表------
+----支持事务和删除更新语句：1.STORED AS ORC TBLPROPERTIES ('transactional'='true') 2.分桶---clustered by
+
+drop table if exists dwd_shop;
+create table dwd_shop(
+wm_poi_id string,
+dp_shop_id bigint,
+shop_name string,
+shop_status string,
+shop_pic string,
+delivery_fee string,
+delivery_type string,
+delivery_time string,
+min_fee double,
+online_pay int,
+bulletin string,
+shipping_time string,
+create_time string
+)
+partitioned by (batch_date string)
+clustered by(wm_poi_id) into 4 buckets
+row format delimited fields terminated by '\t'
+STORED AS ORC TBLPROPERTIES ('transactional'='true');
+
+---dwd店铺插入语句----
+set hive.exec.dynamici.partition=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+insert into table dwd_shop partition(batch_date) 
+select wm_poi_id,dp_shop_id,collect_set(shop_name)[0] shop_name,collect_set(shop_status)[0] shop_status ,collect_set(shop_pic)[0] shop_pic,collect_set(delivery_fee)[0] delivery_fee,
+collect_set(delivery_type)[0] delivery_type,collect_set(delivery_time)[0] delivery_time,collect_set(min_fee)[0] min_fee,collect_set(online_pay)[0] online_pay,collect_set(bulletin)[0] bulletin,collect_set(shipping_time)[0] shipping_time,collect_set(create_time)[0] create_time,'2020-04-03' 
+from ods_shop where batch_date='1989' group by wm_poi_id,dp_shop_id;
+
+---处理数据--
+insert into table dwd_shop partition(batch_date) 
+select wm_poi_id,dp_shop_id,shop_name,shop_status ,shop_pic,delivery_fee,
+delivery_type,delivery_time ,min_fee,online_pay ,bulletin ,shipping_time ,create_time ,'2020-05-03' 
+from dwd_shop where batch_date='2020-04-03' and shop_status is not null ;
+
+
+select a.wm_poi_id,a.shop_name,a.shop_status,a.shop_pic,a.bulletin,a.shipping_time from dwd_shop a where batch_date='2020-05-03';
+
+select a.wm_poi_id,a.shop_name,a.shop_status,a.shop_pic from dwd_shop a where batch_date='2020-05-03';
+
+select a.wm_poi_id,a.shop_name,a.shop_status,a.shop_pic from dwd_shop a where batch_date='2020-04-03' and a.wm_poi_id is not null and a.shop_status is not null;

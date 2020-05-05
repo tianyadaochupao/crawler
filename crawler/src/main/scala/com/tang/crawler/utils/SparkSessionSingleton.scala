@@ -1,4 +1,4 @@
-package com.tang.crawler.wm
+package com.tang.crawler.utils
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
