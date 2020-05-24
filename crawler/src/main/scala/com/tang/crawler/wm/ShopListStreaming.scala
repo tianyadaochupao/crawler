@@ -138,7 +138,7 @@ object ShopListStreaming {
     val wmPoiScore = jsonObject.getIntValue("wmPoiScore")
     val shipping_time = jsonObject.getString("shipping_time")
     val status = jsonObject.getIntValue("status")
-    val create_time = getNowDate("yyyy-MM-dd HH:mm:ss")
+    val create_time = jsonObject.getString("createTime")
     ShopBasic(mtWmPoiId,shopName,statusDesc,address,picUrl,wmPoiScore,shipping_time,status,create_time)
   }
 

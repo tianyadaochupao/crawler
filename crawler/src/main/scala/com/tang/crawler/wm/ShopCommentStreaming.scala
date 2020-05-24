@@ -237,7 +237,7 @@ object ShopCommentStreaming {
     val shopScore = jsonObject.getDoubleValue("shopScore")
     val deliveryScore = jsonObject.getDoubleValue("deliveryScore")
     val commentLabels = jsonObject.getString("commentLabels")
-    val create_time = getNowDate("yyyy-MM-dd HH:mm:ss")
+    val create_time = jsonObject.getString("createTime")
     ShopComment(shopId,mtWmPoiId,recordCount,dpCommentNum,praiseRatio,qualityScore,packScore,integratedScore,shopScore,deliveryScore,commentLabels,create_time)
   }
 
@@ -260,7 +260,7 @@ object ShopCommentStreaming {
     shopComment.put("shop_score",jsonObject.getDoubleValue("shopScore"))
     shopComment.put("delivery_score",jsonObject.getDoubleValue("deliveryScore"))
     shopComment.put("comment_labels",jsonObject.getString("commentLabels"))
-    shopComment.put("create_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
+    shopComment.put("create_time",jsonObject.getString("createTime"))
     shopComment.put("update_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
     shopComment
   }

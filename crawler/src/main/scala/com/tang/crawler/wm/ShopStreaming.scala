@@ -5,15 +5,16 @@ import java.util.Date
 
 import com.alibaba.fastjson.{JSON, JSONException, JSONObject}
 import com.tang.crawler.utils.SparkSessionSingleton
+import org.apache.hadoop.io.LongWritable
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.SparkConf
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010._
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.elasticsearch.spark.rdd.EsSpark
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 object ShopStreaming {
 
   def main(args: Array[String]): Unit = {
@@ -140,7 +141,7 @@ object ShopStreaming {
          jsonObject.put("online_pay",x.getIntValue("onlinePay"))
          jsonObject.put("bulletin",x.getString("bulletin"))
          jsonObject.put("shipping_time",x.getString("shipping_time"))
-         jsonObject.put("create_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
+         jsonObject.put("create_time",x.getString("createTime"))
          jsonObject.put("update_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
          jsonObject
        })
@@ -183,7 +184,7 @@ object ShopStreaming {
       item.put("status_desc",jsonObject.getString("statusDesc"))
       item.put("category_name",jsonObject.getString("categoryName"))
       item.put("category_type",jsonObject.getString("categoryType"))
-      item.put("create_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
+      item.put("create_time",jsonObject.getString("createTime"))
       item.put("update_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
       item
     })
@@ -218,7 +219,7 @@ object ShopStreaming {
       coupon.put("coupon_valid_time_text",jsonObject.getString("couponValidTimeText"))
       coupon.put("coupon_status",jsonObject.getString("couponStatus"))
       coupon.put("limit_new_user",jsonObject.getString("limitNewUser"))
-      coupon.put("create_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
+      coupon.put("create_time",jsonObject.getString("createTime"))
       coupon.put("update_time",getNowDate("yyyy-MM-dd HH:mm:ss"))
       coupon
     })
@@ -352,7 +353,7 @@ object ShopStreaming {
     val onlinePay = jsonObject.getInteger("onlinePay")
     val bulletin = jsonObject.getString("bulletin")
     val shipping_time = jsonObject.getString("shipping_time")
-    val create_time = getNowDate("yyyy-MM-dd HH:mm:ss")
+    val create_time = jsonObject.getString("createTime")
     Shop(mtWmPoiId,dpShopId,shopName,shopStatus,shopPic,deliveryFee,deliveryType,
       deliveryTime,minFee,onlinePay,bulletin,shipping_time,create_time)
   }
@@ -381,7 +382,7 @@ object ShopStreaming {
     val statusDesc = jsonObject.getString("statusDesc")
     val categoryName = jsonObject.getString("categoryName")
     val categoryType = jsonObject.getString("categoryType")
-    val create_time =getNowDate("yyyy-MM-dd HH:mm:ss")
+    val create_time = jsonObject.getString("createTime")
     Item(mtWmPoiId,dpShopId,shopName,spuId,spuName,unit,tag,activityTag,littleImageUrl,bigImageUrl,originPrice,
       currentPrice,spuDesc,praiseNum,activityType,spuPromotionInfo,statusDesc,categoryName,categoryType,create_time)
   }
@@ -403,8 +404,8 @@ object ShopStreaming {
     val couponValidTimeText = jsonObject.getString("couponValidTimeText")
     val couponStatus = jsonObject.getString("couponStatus")
     val limitNewUser = jsonObject.getString("limitNewUser")
-    val createTime = getNowDate("yyyy-MM-dd HH:mm:ss")
-    Coupon(mtWmPoiId,dpShopId,shopName,couponId,couponPoolId,activityId,couponValue,couponConditionText,couponValidTimeText,couponStatus,limitNewUser,createTime)
+    val create_time = jsonObject.getString("createTime")
+    Coupon(mtWmPoiId,dpShopId,shopName,couponId,couponPoolId,activityId,couponValue,couponConditionText,couponValidTimeText,couponStatus,limitNewUser,create_time)
   }
 
   def getNowDate():String={
