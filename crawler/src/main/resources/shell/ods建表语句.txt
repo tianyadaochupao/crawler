@@ -50,6 +50,28 @@ select wm_poi_id,dp_shop_id,shop_name,shop_status,shop_pic,delivery_fee,
 delivery_type,delivery_time,min_fee,online_pay,bulletin,shipping_time,create_time from shop;
 
 
+---店铺数据 保存为Parquet 格式
+
+drop table if exists ods_shop_flink;
+create table ods_shop_flink(
+wm_poi_id string,
+dp_shop_id bigint,
+shop_name string,
+shop_status string,
+shop_pic string,
+delivery_fee string,
+delivery_type string,
+delivery_time string,
+min_fee double,
+online_pay int,
+bulletin string,
+shipping_time string,
+create_time string
+)
+partitioned by (batch_date string)
+STORED AS PARQUET;
+
+
 ---商品建表语句---
 
 

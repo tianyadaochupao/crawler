@@ -1,0 +1,81 @@
+SET table.sql-dialect=hive;
+use wm;
+CREATE TABLE ods_user_behavior_new(
+session_id STRING,
+user_id STRING,
+mt_wm_poi_id STRING,
+shop_name STRING,
+source STRING,
+platform STRING,
+create_time STRING
+) PARTITIONED BY (dt string,hr string,mm string)  TBLPROPERTIES (
+'partition.time-extractor.kind'='custom',
+'partition.time-extractor.timestamp-pattern'='$dt $hr:$mm:00',
+'partition.time-extractor.class'='com.tang.crawler.flink.MyPartTimeExtractor',
+'sink.partition-commit.trigger'='partition-time',
+'sink.partition-commit.delay'='0s',
+'sink.partition-commit.policy.kind'='metastore'
+);
+drop table ods_user_behavior_new;
+select * from ods_user_behavior_new;
+
+insert into ods_user_behavior PARTITION (dt='2020-07-26', hr='20') select 'Tom','Tom','Tom','Tom','Tom','Tom','Tom' from ods_user_behavior;
+
+SET table.sql-dialect=hive;
+CREATE TABLE ods_user_behavior(
+session_id STRING,
+user_id STRING,
+mt_wm_poi_id STRING,
+shop_name STRING,
+source STRING,
+platform STRING,
+create_time STRING
+) PARTITIONED BY (dt STRING, hr STRING) STORED AS parquet TBLPROPERTIES (
+'partition.time-extractor.timestamp-pattern'='$dt $hr:00:00',
+'sink.partition-commit.policy.kind'='metastore,success-file'
+);
+
+
+
+SET table.sql-dialect=hive;
+CREATE TABLE ods_user_behavior(
+session_id STRING,
+user_id STRING,
+mt_wm_poi_id STRING,
+shop_name STRING,
+source STRING,
+platform STRING,
+create_time STRING
+) PARTITIONED BY (dt STRING, hr STRING) STORED AS parquet TBLPROPERTIES (
+'format' = 'csv',  
+'partition.time-extractor.timestamp-pattern'='$dt $hr:00:00',
+'sink.partition-commit.trigger'='partition-time',
+'sink.partition-commit.delay'='0 s',
+'sink.partition-commit.policy.kind'='metastore,success-file'
+);
+
+select * from ods_user_behavior limit 10;
+
+
+kafka 连接器
+SET table.sql-dialect=default;
+CREATE TABLE kafka_user_behavior (
+session_id STRING,
+user_id STRING,
+mt_wm_poi_id STRING,
+shop_name STRING,
+source STRING,
+platform STRING,
+create_time TIMESTAMP(3),
+WATERMARK FOR create_time AS create_time - INTERVAL '5' SECOND
+) WITH (
+'connector' = 'kafka',
+'topic' = 'user_behavior',
+'properties.bootstrap.servers' = '192.168.25.128:9092',
+'properties.group.id' = 'testGroup',
+'format' = 'json',
+'json.fail-on-missing-field' = 'false',
+'json.ignore-parse-errors' = 'true'
+);
+
+select * from kafka_user_behavior;

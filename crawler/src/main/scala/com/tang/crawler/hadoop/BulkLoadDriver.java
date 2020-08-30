@@ -1,5 +1,5 @@
 package com.tang.crawler.hadoop;
-import com.tang.common.utils.HbaseClientUtils;
+import com.tang.crawler.utils.HbaseClientUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
