@@ -1,0 +1,20 @@
+set table.sql-dialect=default;
+
+CREATE TABLE kafka_ods_user_behavior (
+sessionId STRING,
+userId STRING,
+mtWmPoiId STRING,
+shopName STRING,
+source STRING,
+platform STRING,
+createTime STRING
+) WITH (
+ 'connector' = 'kafka-0.11',
+ 'topic' = 'user_behavior',
+ 'properties.bootstrap.servers' = '192.168.25.128:9092',
+ 'properties.group.id' = 'testGroup',
+ 'format' = 'json',
+ 'scan.startup.mode' = 'latest-offset'
+);
+
+select mtWmPoiId,num from (select mtWmPoiId,count(1) as num from kafka_ods_user_behavior group by mtWmPoiId) a order by a.num desc limit 3;

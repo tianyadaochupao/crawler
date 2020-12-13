@@ -3,7 +3,7 @@ package com.tang.crawler.flink
 
 import java.text.SimpleDateFormat
 import java.time.Duration
-import java.util.Properties
+import java.util.{Calendar, Properties}
 
 import com.alibaba.fastjson.{JSON, JSONObject}
 import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}

@@ -79,3 +79,23 @@ WATERMARK FOR create_time AS create_time - INTERVAL '5' SECOND
 );
 
 select * from kafka_user_behavior;
+
+
+
+
+CREATE TABLE ods_user_behavior_two(
+session_id STRING,
+user_id STRING,
+mt_wm_poi_id STRING,
+shop_name STRING,
+source STRING,
+platform STRING,
+create_time STRING
+) PARTITIONED BY (dt string,hr string,mm string)  TBLPROPERTIES (
+'partition.time-extractor.timestamp-pattern'='$dt $hr:$mm:00',
+'sink.partition-commit.trigger'='partition-time',
+'sink.partition-commit.delay'='0s',
+'sink.partition-commit.policy.kind'='metastore'
+);
+
+select * from user_behavior order by count desc limit 3

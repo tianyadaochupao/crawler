@@ -1,0 +1,32 @@
+set table.sql-dialect=default;
+
+CREATE TABLE ods_hot_shop (
+  id BIGINT,
+  mt_wm_poi_id STRING,
+  shop_name STRING,
+  source STRING,
+  platform STRING,
+  type STRING,
+  type_value STRING,
+  time_range STRING,
+  create_time STRING,
+  update_time STRING,
+  status STRING,
+  PRIMARY KEY (id) NOT ENFORCED
+) WITH (
+   'connector' = 'jdbc',
+   'url' = 'jdbc:mysql://192.168.25.1:3306/wm',
+   'table-name' = 'ods_hot_shop',
+   'username' = 'root',
+   'password' = '123456'
+);
+
+INSERT INTO dwd_hot_shop SELECT * FROM dw_hot_shop;
+
+SELECT id,status FROM dw_hot_shop;
+
+SELECT count(*) FROM ods_hot_shop;
+
+SELECT  FROM ods_user_behavior_new;
+
+drop table ods_hot_shop ;

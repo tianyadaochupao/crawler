@@ -1,0 +1,23 @@
+set table.sql-dialect=default;
+create 'wm:hbase_user_behavior', 'info';
+
+put 'wm:hbase_user_behavior', 'rk0001', 'info:user_id', '123456'
+put 'hbase_user_behavior', 'rk0001', 'info:shop_name', 'danchaofan'
+get 'wm:hbase_user_behavior', 'rowkey_test'
+scan 'hbase_user_behavior'  
+
+CREATE TABLE hbase_user_behavior(
+rowkey STRING,
+info ROW<user_id STRING,mt_wm_poi_id STRING,shop_name STRING,source STRING,platform STRING,create_time STRING,dt STRING,hr STRING,mm STRING>,
+PRIMARY KEY (rowkey) NOT ENFORCED
+) WITH (
+'connector' = 'hbase-1.4',
+'table-name' = 'wm:hbase_user_behavior',
+'zookeeper.quorum' = 'ELK01:2181,ELK02:2181,ELK03:2181',
+'zookeeper.znode.parent' = '/hbase'
+);
+
+INSERT INTO hbase_user_behavior
+SELECT 'rowkey_test', ROW('test', 'test', 'test','test','test','test','test','test','test') as info ;
+
+SELECT * FROM hbase_user_behavior;
