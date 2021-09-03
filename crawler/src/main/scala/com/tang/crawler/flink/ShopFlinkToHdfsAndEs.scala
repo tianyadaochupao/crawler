@@ -18,7 +18,7 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.
 import org.apache.flink.streaming.api.watermark.Watermark
 import org.apache.flink.streaming.connectors.elasticsearch.{ActionRequestFailureHandler, ElasticsearchSinkFunction, RequestIndexer}
 import org.apache.flink.streaming.connectors.elasticsearch5.ElasticsearchSink
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 import org.elasticsearch.action.ActionRequest
 import org.elasticsearch.client.Requests
 
@@ -45,7 +45,7 @@ object ShopFlinkToHdfsAndEs {
 
     //1.source输入---kafka作为source
     //入参 topic SimpleStringSchema--读取kafka消息是string格式 properties kafka的配置
-    val inputStream = env.addSource(new FlinkKafkaConsumer011[String]("shop1", new SimpleStringSchema(), properties))
+    val inputStream = env.addSource(new FlinkKafkaConsumer[String]("shop1", new SimpleStringSchema(), properties))
 
     //2.1算子--处理数据
     val stream = inputStream.map(new MapFunction[String,JSONObject] {

@@ -8,7 +8,7 @@ shop_name STRING,
 source STRING,
 platform STRING,
 create_time STRING
-) PARTITIONED BY (dt string,hr string,mm string)  TBLPROPERTIES (
+) PARTITIONED BY (dt string,hr string,mm string ) TBLPROPERTIES (
 'partition.time-extractor.kind'='custom',
 'partition.time-extractor.timestamp-pattern'='$dt $hr:$mm:00',
 'partition.time-extractor.class'='com.tang.crawler.flink.MyPartTimeExtractor',
@@ -19,7 +19,7 @@ create_time STRING
 drop table ods_user_behavior_new;
 select * from ods_user_behavior_new;
 
-insert into ods_user_behavior PARTITION (dt='2020-07-26', hr='20') select 'Tom','Tom','Tom','Tom','Tom','Tom','Tom' from ods_user_behavior;
+insert into ods_user_behavior_new PARTITION (dt='2021-01-10', hr='14',mm='45') select '1','tang','tang','tang','tang','tang','tang' ;
 
 SET table.sql-dialect=hive;
 CREATE TABLE ods_user_behavior(

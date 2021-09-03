@@ -8,11 +8,11 @@ import com.alibaba.fastjson.serializer.SerializeConfig
 import com.alibaba.fastjson.{JSON, JSONException, JSONObject}
 import org.apache.flink.api.common.functions.{FilterFunction, MapFunction}
 import org.apache.flink.api.common.serialization.SimpleStringSchema
-import org.apache.flink.streaming.api.{TimeCharacteristic}
+import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
 import org.apache.flink.streaming.api.watermark.Watermark
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 
 
 object ShopFlink {
@@ -37,7 +37,7 @@ object ShopFlink {
 
     //1.source输入---kafka作为source
     //入参 topic SimpleStringSchema--读取kafka消息是string格式 properties kafka的配置
-    val inputStream = env.addSource(new FlinkKafkaConsumer011[String]("shop1", new SimpleStringSchema(), properties))
+    val inputStream = env.addSource(new FlinkKafkaConsumer[String]("shop1", new SimpleStringSchema(), properties))
 
 
 

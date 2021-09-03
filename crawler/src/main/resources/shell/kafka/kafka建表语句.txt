@@ -18,3 +18,48 @@ createTime STRING
 );
 
 select mtWmPoiId,num from (select mtWmPoiId,count(1) as num from kafka_ods_user_behavior group by mtWmPoiId) a order by a.num desc limit 3;
+
+
+
+
+
+CREATE TABLE kafka_ods_user_behavior_test (
+sessionId STRING,
+userId STRING,
+mtWmPoiId STRING,
+shopName STRING,
+source STRING,
+platform STRING,
+createTime STRING,
+ts BIGINT,
+ts_ltz AS TO_TIMESTAMP_LTZ(ts, 3),
+WATERMARK FOR ts_ltz AS ts_ltz - INTERVAL '5' SECOND
+) WITH (
+ 'connector' = 'kafka',
+ 'topic' = 'user_behavior',
+ 'properties.bootstrap.servers' = '192.168.25.128:9092',
+ 'properties.group.id' = 'testGroup1',
+ 'format' = 'json',
+ 'scan.startup.mode' = 'latest-offset'
+);
+
+
+INSERT INTO ods_user_behavior_new
+SELECT sessionId as session_id,userId as use_id,mtWmPoiId as mt_wm_poi_id,
+shopName as shop_name,source as source,platform as platform,createTime as create_time,
+'2021-06-10' as dt,'23' as hr,'01' as mm
+FROM kafka_ods_user_behavior_test;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

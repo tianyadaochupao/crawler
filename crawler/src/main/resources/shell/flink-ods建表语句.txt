@@ -1,0 +1,42 @@
+
+---创建数据库-----
+create database wm;
+
+---创建店铺表------
+
+drop table if exists ods_shop;
+create table ods_shop(
+wm_poi_id string,
+dp_shop_id bigint,
+shop_name string,
+shop_status int,
+shop_pic string,
+delivery_fee string,
+delivery_type string,
+delivery_time string,
+min_fee double,
+online_pay int,
+bulletin string,
+shipping_time string,
+create_time string
+)
+PARTITIONED BY (dt string,hr string,mm string ) TBLPROPERTIES (
+'partition.time-extractor.kind'='custom',
+'partition.time-extractor.timestamp-pattern'='$dt $hr:$mm:00',
+'partition.time-extractor.class'='com.tang.crawler.flink.MyPartTimeExtractor',
+'sink.partition-commit.trigger'='partition-time',
+'sink.partition-commit.delay'='0s',
+'sink.partition-commit.policy.kind'='metastore',
+'auto-compaction'='true',
+'compaction.file-size'='128MB'
+);
+
+
+
+
+---店铺插入语句----
+insert into table ods_shop partition(batch_date) 
+select wm_poi_id,dp_shop_id,shop_name,shop_status,shop_pic,delivery_fee,
+delivery_type,delivery_time,min_fee,online_pay,bulletin,shipping_time,create_time from shop;
+
+

@@ -5,7 +5,6 @@ import java.util.Date
 
 import com.alibaba.fastjson.{JSON, JSONException, JSONObject}
 import com.tang.crawler.utils.SparkSessionSingleton
-import org.apache.hadoop.io.LongWritable
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe

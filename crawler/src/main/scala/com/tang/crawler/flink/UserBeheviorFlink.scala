@@ -2,8 +2,8 @@ package com.tang.crawler.flink
 
 
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.util.{Calendar, Properties}
+import java.time.{Duration, ZoneId}
+import java.util.{Properties}
 
 import com.alibaba.fastjson.{JSON, JSONObject}
 import org.apache.flink.api.common.eventtime.{SerializableTimestampAssigner, WatermarkStrategy}
@@ -11,9 +11,10 @@ import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.{CheckpointingMode, TimeCharacteristic}
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer011
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 import org.apache.flink.streaming.api.scala._
+import org.apache.flink.api.scala._
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 import org.apache.flink.table.catalog.hive.HiveCatalog
 
 
@@ -23,6 +24,9 @@ object UserBeheviorFlink {
 
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     val tableEnv = StreamTableEnvironment.create(env)
+    //设置tableConfig 用户可以通过 table.local-time-zone 自行设置
+    val tableConfig = tableEnv.getConfig
+    tableConfig.setLocalTimeZone(ZoneId.of("Asia/Shanghai"))
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
     env.enableCheckpointing(1000,CheckpointingMode.EXACTLY_ONCE)
 
@@ -41,7 +45,8 @@ object UserBeheviorFlink {
     //1.source输入---kafka作为source
     //入参 topic SimpleStringSchema--读取kafka消息是string格式 properties kafka的配置
 
-    val  kafkaSource = new FlinkKafkaConsumer011[String]("user_behavior", new SimpleStringSchema(), properties)
+    val  kafkaSource = new FlinkKafkaConsumer[String]("user_behavior", new SimpleStringSchema(), properties)
+    import org.apache.flink.streaming.api.scala._
     val inputStream = env.addSource( kafkaSource)
     val stream: DataStream[UserBehavior] = inputStream.map(new MapFunction[String,UserBehavior] {
       override def map(value: String): UserBehavior = {
@@ -69,11 +74,12 @@ object UserBeheviorFlink {
       }))
     val name            = "myHive"
     val defaultDatabase = "wm"
-    val hiveConfDir     = "D:\\tang-spark2\\crawler\\src\\main\\resources"
+    val hiveConfDir     = "/usr/local/apps/conf/hive"
     val version         = "2.3.4"
     val hive = new HiveCatalog(name, defaultDatabase, hiveConfDir, version)
     tableEnv.registerCatalog("myHive", hive)
     tableEnv.useCatalog("myHive")
+    
     //流转为表
     tableEnv.createTemporaryView("user_behavior",stream)
 
