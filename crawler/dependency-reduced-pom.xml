@@ -81,5 +81,8 @@
       </plugin>
     </plugins>
   </build>
+  <properties>
+    <flink.version>1.12.0</flink.version>
+  </properties>
 </project>
 

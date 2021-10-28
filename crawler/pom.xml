@@ -19,7 +19,6 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.11</artifactId>
@@ -97,7 +96,6 @@
             <artifactId>kafka_2.11</artifactId>
             <version>${kafka.version}</version>
         </dependency>
-
         <!-- 指定kafka-client API的版本-->
         <dependency>
             <groupId>org.apache.kafka</groupId>
